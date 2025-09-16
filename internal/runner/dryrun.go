@@ -1,10 +1,15 @@
 package runner
 
-import "github.com/ci-on-dev/ci.on-cli/internal/ir"
+import (
+	"github.com/ci-on-dev/ci.on-cli/internal/ir"
+	logs "github.com/ci-on-dev/ci.on-cli/internal/logs"
+)
 
-type DryRun struct{}
+type DryRun struct {
+	logService logs.LogsService
+}
 
-func NewDryRun() *DryRun { return &DryRun{} }
+func NewDryRun(logService logs.LogsService) *DryRun { return &DryRun{logService: logService} }
 
 func (r *DryRun) Run(p ir.IR) (map[string]JobResult, error) {
 	results := make(map[string]JobResult)

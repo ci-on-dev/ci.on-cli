@@ -16,3 +16,8 @@ tasks:
     dir: .
     cmds:
       - task --list-all
+
+  release:
+    cmds:
+      - goreleaser release --config local.goreleaser.yaml --clean --snapshot
+      - sudo mv dist/ci.on_linux_amd64_v1/ci.on /usr/local/bin/ci.on

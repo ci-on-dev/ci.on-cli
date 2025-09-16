@@ -7,12 +7,15 @@ import (
 	"strings"
 
 	"github.com/ci-on-dev/ci.on-cli/internal/ir"
+	logs "github.com/ci-on-dev/ci.on-cli/internal/logs"
 )
 
-type LocalRunner struct{}
+type LocalRunner struct {
+	logService logs.LogsService
+}
 
-func NewLocalRunner() *LocalRunner {
-	return &LocalRunner{}
+func NewLocalRunner(logService logs.LogsService) *LocalRunner {
+	return &LocalRunner{logService: logService}
 }
 
 type JobResult struct {
@@ -47,7 +50,7 @@ func (r *LocalRunner) Run(p ir.IR) (map[string]JobResult, error) {
 
 	err := ciCmd.Run()
 	status := "success"
-	if err != nil {
+	if err != nil || strings.Contains(outBuf.String(), "failed") || strings.Contains(errBuf.String(), "failed") {
 		status = "failed"
 	}
 

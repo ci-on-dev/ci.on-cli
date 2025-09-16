@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="prepare_vms_app" tests="3" failures="0">
+    <testcase classname="prepare_vms_app" name="if length of OUTPUTS_VMS is 2 and VM_APP_COUNT is 2 then BG_VMS_TO_CREATE is empty, BG_VMS_TO_DELETE is empty, BG_VMS_TO_UPDATE HAS 2 items"></testcase>
+    <testcase classname="prepare_vms_app" name="if length of OUTPUTS_VMS is 3 and VM_APP_COUNT is 2 then BG_VMS_TO_CREATE is empty, BG_VMS_TO_DELETE is 1, BG_VMS_TO_UPDATE HAS 2 items"></testcase>
+    <testcase classname="prepare_vms_app" name="if length of OUTPUTS_VMS is 1 and VM_APP_COUNT is 2 then BG_VMS_TO_CREATE has 1 item, BG_VMS_TO_DELETE is empty, BG_VMS_TO_UPDATE HAS 1 item"></testcase>
+  </testsuite>
+</testsuites>

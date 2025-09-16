@@ -1,0 +1,93 @@
+name: prepare_vms_app
+pipeline:
+  provider: gitlab
+  file: examples/gitlab/prepare_vms_app.gitlab-ci.yml
+  vars:
+    ENVIRONMENT_CODE: teste
+    VM_TYPE: app
+    VLAN: 3990
+    WCI_ID: 7e15ba61-a5c3-44df-99c4-6e57d6950670
+    HAS_PRE_UPDATE: false
+    IS_FIRST: false
+    IS_TEST: true
+    RUNNER_ENV_TAG: dev
+
+tests:
+  - name: "if length of OUTPUTS_VMS is 2 and VM_APP_COUNT is 2 then BG_VMS_TO_CREATE is empty, BG_VMS_TO_DELETE is empty, BG_VMS_TO_UPDATE HAS 2 items"
+    stages:
+      - blue_green
+    vars:
+      OUTPUT_VMS: '[{"id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","index":1,"type":"app","name":"WY3940APP1","external_id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","ip_address":"10.5.0.8","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","sl_ip_address":"10.5.0.6","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"1","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}},{"id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","index":0,"type":"app","name":"WY3940APP0","external_id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","ip_address":"10.5.0.7","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"0","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}}]'
+      MAX_USER_PER_VM: 20
+      USER_COUNT: 40
+      VM_APP_COUNT: 2
+    after:
+      - "rm global.env"
+    asserts:
+      - name: check global.env variables
+        expect:
+          job: prepare_vms_app
+          stepStatus: success
+          artifact:
+            file: "global.env"
+            contains:
+              - 'BG_VMS_TO_UPDATE=[{"id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","index":1,"type":"app","name":"WY3940APP1","external_id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","ip_address":"10.5.0.8","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","sl_ip_address":"10.5.0.6","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"1","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}},{"id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","index":0,"type":"app","name":"WY3940APP0","external_id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","ip_address":"10.5.0.7","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"0","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}}]'
+              - "BG_VMS_TO_DELETE=[]"
+              - "BG_VMS_TO_CREATE=[]"
+          output:
+            contains:
+              - 'echo "BG_VMS_TO_UPDATE=$BG_VMS_TO_UPDATE" >> global.env'
+              - 'echo "BG_VMS_TO_DELETE=$BG_VMS_TO_DELETE" >> global.env'
+              - 'echo "BG_VMS_TO_CREATE=$BG_VMS_TO_CREATE" >> global.env'
+  - name: "if length of OUTPUTS_VMS is 3 and VM_APP_COUNT is 2 then BG_VMS_TO_CREATE is empty, BG_VMS_TO_DELETE is 1, BG_VMS_TO_UPDATE HAS 2 items"
+    stages:
+      - blue_green
+    vars:
+      OUTPUT_VMS: '[{"id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","index":1,"type":"app","name":"WY3940APP1","external_id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","ip_address":"10.5.0.8","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","sl_ip_address":"10.5.0.6","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"1","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}},{"id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","index":0,"type":"app","name":"WY3940APP0","external_id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","ip_address":"10.5.0.7","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"0","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}},{"id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","index":2,"type":"app","name":"WY3940APP2","external_id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","ip_address":"10.5.0.7","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"2","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}}]'
+      MAX_USER_PER_VM: 20
+      USER_COUNT: 40
+      VM_APP_COUNT: 2
+    after:
+      - "rm global.env"
+    asserts:
+      - name: check global.env variables
+        expect:
+          job: prepare_vms_app
+          stepStatus: success
+          artifact:
+            file: "global.env"
+            contains:
+              - 'BG_VMS_TO_UPDATE=[{"id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","index":1,"type":"app","name":"WY3940APP1","external_id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","ip_address":"10.5.0.8","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","sl_ip_address":"10.5.0.6","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"1","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}},{"id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","index":0,"type":"app","name":"WY3940APP0","external_id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","ip_address":"10.5.0.7","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"0","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}}]'
+              - 'BG_VMS_TO_DELETE=[{"id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","index":2,"type":"app","name":"WY3940APP2","external_id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"9e7e3a7e-b570-418e-bedd-aa194a3e8604","ip_address":"10.5.0.7","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"2","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}}]'
+              - "BG_VMS_TO_CREATE=[]"
+          output:
+            contains:
+              - 'echo "BG_VMS_TO_UPDATE=$BG_VMS_TO_UPDATE" >> global.env'
+              - 'echo "BG_VMS_TO_DELETE=$BG_VMS_TO_DELETE" >> global.env'
+              - 'echo "BG_VMS_TO_CREATE=$BG_VMS_TO_CREATE" >> global.env'
+  - name: "if length of OUTPUTS_VMS is 1 and VM_APP_COUNT is 2 then BG_VMS_TO_CREATE has 1 item, BG_VMS_TO_DELETE is empty, BG_VMS_TO_UPDATE HAS 1 item"
+    stages:
+      - blue_green
+    vars:
+      OUTPUT_VMS: '[{"id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","index":1,"type":"app","name":"WY3940APP1","external_id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","ip_address":"10.5.0.8","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","sl_ip_address":"10.5.0.6","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"1","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}}]'
+      MAX_USER_PER_VM: 20
+      USER_COUNT: 40
+      VM_APP_COUNT: 2
+    after:
+      - "rm global.env"
+    asserts:
+      - name: check global.env variables
+        expect:
+          job: prepare_vms_app
+          stepStatus: success
+          artifact:
+            file: "global.env"
+            contains:
+              - 'BG_VMS_TO_UPDATE=[{"id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","index":1,"type":"app","name":"WY3940APP1","external_id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","offering_id":"f6fc45e0-2ae9-429d-a436-dc8021f54184","ip_address":"","wci_id":"c5113de8-1083-4cd5-8427-1b69d4835dbd","os":"windows","distro":"windows","storage":null,"tags":{"ad_ip_address":"172.25.170.2","agent_stack_latest_version":"0.32.0-dev","db_ip_address":"10.5.0.2","db_type":"HANA","deploy_temp_token":"gldt-xmGoxxzC8xZ7QvDGQW9s","distro":"windows","env":"dev","environment_code":"VqTx6wazD6","environment_env":"dev","environment_id":"9573Xf4b-2861-q5t9-d7g2-lm3e8jkazD6","gateway_ip_address":"10.5.0.1","id":"e85757d9-c4ee-4448-9e47-eb90a3a83867","ip_address":"10.5.0.8","os":"windows","run_account_id":"6plhX38y-721t-5m9b-4ca7-3kj5824nnfz3","sl_ip_address":"10.5.0.6","software_code":"s1p","software_id":"1","vlan":"3940","vm_index":"1","vm_type":"app","wevy_id":"B9xqp7vLm5z3"}}]'
+              - "BG_VMS_TO_DELETE=[]"
+              - 'BG_VMS_TO_CREATE=[{"type":"app","index":0,"vlan":3990,"wci_id":"7e15ba61-a5c3-44df-99c4-6e57d6950670",'
+          output:
+            contains:
+              - 'echo "BG_VMS_TO_UPDATE=$BG_VMS_TO_UPDATE" >> global.env'
+              - 'echo "BG_VMS_TO_DELETE=$BG_VMS_TO_DELETE" >> global.env'
+              - 'echo "BG_VMS_TO_CREATE=$BG_VMS_TO_CREATE" >> global.env'

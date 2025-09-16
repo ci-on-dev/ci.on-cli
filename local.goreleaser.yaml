@@ -1,0 +1,48 @@
+version: 2
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: ci.on
+    main: ./cmd/ci.on
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    binary: ci.on
+    ldflags: "-s -w"
+    env:
+      - CGO_ENABLED=0
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^.devops:"
+      - "^.tasks:"
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+  ids:
+    - "ci.on"
+  extra_files:
+    - glob: ./dist/**/ci.on
+    - glob: ./dist/**/ci.on.exe
+
+snapshot:
+  version_template: "{{ .Tag }}"

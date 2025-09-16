@@ -1,39 +1,36 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/ci-on-dev/ci.on-cli/internal/assert"
+	"github.com/ci-on-dev/ci.on-cli/internal/report"
 	"github.com/ci-on-dev/ci.on-cli/internal/runner"
 )
 
-func RunTest(args []string) {
-	if len(args) < 2 || args[0] != "-t" {
-		log.Fatalf("usage: ci.on test -t <testfile>")
-	}
-	testPath := args[1]
+func (service mainService) RunTest(testPath string) {
 
 	suite, err := assert.LoadSuite(testPath)
 	if err != nil {
-		log.Fatal(err)
+		service.logService.Fatal(500, "assert_load_suite", err.Error())
 	}
 
 	var r runner.Runner
 	if suite.Pipeline.Provider == "gitlab" {
-		r = runner.NewLocalRunner()
+		r = runner.NewLocalRunner(service.logService)
 	} else {
-		r = runner.NewDocker(runner.Config{})
+		r = runner.NewDocker(runner.Config{}, service.logService)
 	}
 
 	// valida asserts
-	res := assert.ExecuteSuite(suite, r)
+	res := service.assertService.ExecuteSuite(suite, r)
 	exit := 0
 	if !res.Passed {
 		exit = 1
 	}
-	if err := res.WriteReports(suite.Reports); err != nil {
-		log.Println("report:", err)
+	if err := report.WriteJUnitFile(res, "reports/junit.xml"); err != nil {
+		fmt.Println("Erro ao gerar junit.xml:", err)
 	}
 	os.Exit(exit)
 }

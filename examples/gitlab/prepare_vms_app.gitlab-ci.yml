@@ -1,0 +1,66 @@
+prepare_vms_app:
+  stage: blue_green
+  variables:
+    VM_TYPE: app
+  artifacts:
+    expire_in: 1 day
+    reports:
+      dotenv: global.env
+  needs: []
+  script:
+    - echo "OUTPUT_VMS=$OUTPUT_VMS"
+    - echo "VM_APP_COUNT=$VM_APP_COUNT"
+
+    # quantidade atual
+    - EXISTING_COUNT=$(echo "$OUTPUT_VMS" | jq '. | length')
+    - echo "EXISTING_COUNT=$EXISTING_COUNT"
+
+    # quantidade desejada
+    - CURRENT=$VM_APP_COUNT
+    - echo "CURRENT=$CURRENT"
+
+    # arrays vazios
+    - BG_VMS_TO_CREATE="[]"
+    - BG_VMS_TO_DELETE="[]"
+    - BG_VMS_TO_UPDATE="[]"
+
+    # índices já existentes
+    - EXISTING_INDEXES=$(echo "$OUTPUT_VMS" | jq -r ".[] | select(.type==\"$VM_TYPE\") | .index")
+    - echo "EXISTING_INDEXES=$EXISTING_INDEXES"
+
+    # DELETE → índices acima do desejado
+    - BG_VMS_TO_DELETE=$(echo "$OUTPUT_VMS" | jq -c "[.[] | select(.type==\"$VM_TYPE\" and .index >= $CURRENT)]")
+
+    # CREATE → índices faltando até CURRENT-1
+    - |
+      missing="[]"
+      for i in $(seq 0 $((CURRENT-1))); do
+        if ! echo "$EXISTING_INDEXES" | grep -qw "$i"; then
+          VM_ID=$(cat /proc/sys/kernel/random/uuid)
+          new_vm=$(jq -n \
+            --arg type "$VM_TYPE" \
+            --argjson index $i \
+            --arg id "$VM_ID" \
+            --arg external_id "$VM_ID" \
+            --arg wci_id "$WCI_ID" \
+            --argjson vlan $VLAN \
+            '{
+              type: $type,
+              index: $index,
+              vlan: $vlan,
+              wci_id: $wci_id,
+              id: $id,
+              external_id: $external_id
+            }')
+          missing=$(echo "$missing" | jq --argjson obj "$new_vm" '. + [$obj]')
+        fi
+      done
+      BG_VMS_TO_CREATE=$(echo "$missing" | jq -c)
+
+    # UPDATE → todas dentro do range válido (0..CURRENT-1)
+    - BG_VMS_TO_UPDATE=$(echo "$OUTPUT_VMS" | jq -c "[.[] | select(.type==\"$VM_TYPE\" and .index < $CURRENT)]")
+
+    # exporta
+    - echo "BG_VMS_TO_CREATE=$BG_VMS_TO_CREATE" >> global.env
+    - echo "BG_VMS_TO_DELETE=$BG_VMS_TO_DELETE" >> global.env
+    - echo "BG_VMS_TO_UPDATE=$BG_VMS_TO_UPDATE" >> global.env

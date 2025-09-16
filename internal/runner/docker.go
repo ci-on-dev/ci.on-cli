@@ -6,14 +6,16 @@ import (
 	"os/exec"
 
 	"github.com/ci-on-dev/ci.on-cli/internal/ir"
+	logs "github.com/ci-on-dev/ci.on-cli/internal/logs"
 )
 
 type Docker struct {
-	cfg Config
+	cfg        Config
+	logService logs.LogsService
 }
 
-func NewDocker(cfg Config) *Docker {
-	return &Docker{cfg: cfg}
+func NewDocker(cfg Config, logService logs.LogsService) *Docker {
+	return &Docker{cfg: cfg, logService: logService}
 }
 
 // Run executa cada step do job dentro do host usando docker run

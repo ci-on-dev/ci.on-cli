@@ -11,6 +11,8 @@ type Test struct {
 	Name    string         `yaml:"name"`
 	Vars    map[string]any `yaml:"vars"`
 	Asserts []Assert       `yaml:"asserts"`
+	Stages  []string       `yaml:"stages"`
+	After   []string       `yaml:"after"`
 }
 
 type RunCfg struct {

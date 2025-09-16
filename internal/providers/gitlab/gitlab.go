@@ -36,6 +36,8 @@ func (p *GitLabProvider) Parse(suite models.Suite, test models.Test) (ir.IR, err
 		return ir.IR{}, fmt.Errorf("cannot parse YAML: %w", err)
 	}
 
+	suite.Pipeline.Stages = test.Stages
+	fmt.Println("Stages:", suite.Pipeline.Stages)
 	wrapperFile, err := GenerateWrapperYAML(suite, test)
 	if err != nil {
 		log.Fatal(err)

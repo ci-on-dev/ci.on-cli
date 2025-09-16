@@ -3,6 +3,8 @@ package assert
 import (
 	"fmt"
 	"log"
+	"os"
+	"os/exec"
 
 	"github.com/ci-on-dev/ci.on-cli/internal/models"
 	"github.com/ci-on-dev/ci.on-cli/internal/providers"
@@ -15,18 +17,24 @@ type AssertionResult struct {
 	Message string // mensagem de sucesso ou erro
 }
 
-func ExecuteSuite(s models.Suite, r runner.Runner) Results {
+func (service assertService) ExecuteSuite(s models.Suite, r runner.Runner) Results {
 	fmt.Println("Running suite:", s.Name)
 	var results Results
 	for _, test := range s.Tests {
 		fmt.Printf("\n=== Running test: %s ===\n", test.Name)
+		service.logService.Debugf("Provider: %s", s.Pipeline.Provider)
 		prov := providers.Get(s.Pipeline.Provider)
+		if prov == nil {
+			log.Fatal("provider not found")
+		}
+		service.logService.Debugf("Pipeline file: %s", s.Pipeline.File)
 		irPipeline, err := prov.Parse(s, test)
 		if err != nil {
 			log.Fatal(err)
 		}
+		service.logService.Debugf("IR Pipeline: %s", irPipeline)
 		runResult, err := r.Run(irPipeline)
-
+		service.logService.Debugf("Run Result: %s", runResult)
 		if err != nil {
 			return Results{
 				Results: []Result{
@@ -52,6 +60,7 @@ func ExecuteSuite(s models.Suite, r runner.Runner) Results {
 		}
 
 		for _, a := range test.Asserts {
+			fmt.Printf("\n=== Assert: %s ===\n", a.Name)
 			// job := ir.FindJob(a.Expect.Job)
 			// if job == nil {
 			// 	res.Passed = false
@@ -98,9 +107,11 @@ func ExecuteSuite(s models.Suite, r runner.Runner) Results {
 				res = AssertArtifact(a, res)
 			}
 
-			if len(a.Expect.OutputContains.Contains) > 0 {
-				output := runResult[a.Expect.Job].Output
-				res = AssertOutput(a, output, res)
+			if a.Expect.OutputContains != nil {
+				if len(a.Expect.OutputContains.Contains) > 0 {
+					output := runResult[a.Expect.Job].Output
+					res = AssertOutput(a, output, res)
+				}
 			}
 		}
 
@@ -111,6 +122,18 @@ func ExecuteSuite(s models.Suite, r runner.Runner) Results {
 		results.Results = append(results.Results, res)
 		if !res.Passed {
 			results.Passed = false
+		}
+
+		if len(test.After) > 0 {
+			for _, after := range test.After {
+				cmd := exec.Command("sh", "-c", after)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				service.logService.Debugf("running after: %s", after)
+				if err := cmd.Run(); err != nil {
+					service.logService.Debugf("after error: %v", err.Error())
+				}
+			}
 		}
 	}
 

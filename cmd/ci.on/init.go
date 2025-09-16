@@ -7,18 +7,18 @@ import (
 	"runtime"
 )
 
-func RunInit() error {
-	fmt.Println("Initializing CI.On for GitLab...")
+func (service mainService) RunInit() error {
+	service.logService.Info("Initializing CI.On for GitLab...")
 
 	// verifica se gitlab-ci-local já está instalado
 	_, err := exec.LookPath("gitlab-ci-local")
 	if err == nil {
-		fmt.Println("gitlab-ci-local is already installed ✅")
+		service.logService.Info("gitlab-ci-local is already installed ✅")
 		return nil
 	}
 
 	// instala via npm global
-	fmt.Println("Installing gitlab-ci-local...")
+	service.logService.Info("Installing gitlab-ci-local...")
 	var installCmd *exec.Cmd
 	switch runtime.GOOS {
 	case "darwin":
@@ -34,10 +34,11 @@ func RunInit() error {
 	installCmd.Stdout = os.Stdout
 	installCmd.Stderr = os.Stderr
 	if err := installCmd.Run(); err != nil {
+		service.logService.Error(500, "install_gitlab_ci_local", err.Error())
 		return fmt.Errorf("failed to install gitlab-ci-local: %w", err)
 	}
 
-	fmt.Println("gitlab-ci-local installed successfully ✅")
+	service.logService.Info("gitlab-ci-local installed successfully ✅")
 	return nil
 
 }
