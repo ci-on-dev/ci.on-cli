@@ -1,0 +1,18 @@
+version: 3
+
+includes:
+  ci:
+    taskfile: .tasks/archetypes/pipelines/.tasks.yaml
+    optional: true
+
+tasks:
+  test_all:
+    desc: "test all"
+    cmds:
+      - gitlab-ci-local --fetch-includes --file examples/gitlab/ci.on.generated.gitlab-ci.yml
+
+  default:
+    desc: "Default task"
+    dir: .
+    cmds:
+      - task --list-all

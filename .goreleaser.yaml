@@ -1,0 +1,40 @@
+project_name: ci.on-cli
+
+builds:
+  - id: ci.on-cli
+    main: ./cmd/ci.on/main.go
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    binary: ci.on
+    ldflags: "-s -w"
+    env:
+      - CGO_ENABLED=0
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+
+release:
+  github:
+    owner: ci-on-dev
+    name: ci.on-cli
+    draft: false
+    prerelease: false
+
+brew:
+  - name: ci.on-cli
+    github:
+      owner: ci-on-dev
+      name: homebrew-tap
+    folder: Formula

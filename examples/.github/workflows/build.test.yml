@@ -1,0 +1,16 @@
+suite: build-basic
+pipeline:
+  provider: github
+  file: examples/.github/workflows/build.yml
+run:
+  mode: real
+asserts:
+  - name: build job exists
+    expect:
+      job: build
+      status: success
+      stepStatus: success
+  - name: checkout step exists
+    expect:
+      job: build
+      step: Checkout

@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug ci.on-cli",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/ci.on",
+            "args": [
+                "test",
+                "-t",
+                "examples/gitlab/create_global_env.test.gitlab-ci.yml"
+            ],
+            "env": {
+                "GOCACHE": "${workspaceFolder}/.cache",
+                "GOPATH": "${workspaceFolder}/.go"
+            },
+            "buildFlags": "",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

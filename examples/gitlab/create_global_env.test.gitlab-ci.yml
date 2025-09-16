@@ -1,0 +1,48 @@
+name: create-global-env
+pipeline:
+  provider: gitlab
+  file: examples/gitlab/create_global_env.gitlab-ci.yml
+
+tests:
+  - name: "valid variables"
+    vars:
+      ENVIRONMENT_CODE: teste
+      ZONE: zona-01
+      ACTION: teste
+    asserts:
+      - name: check global.env variables
+        expect:
+          job: create_global_env
+          stepStatus: success
+          artifact:
+            file: "global.env"
+            contains:
+              - "ACTION=teste"
+              - "ZONE=zona-01"
+              - "ENVIRONMENT_CODE=teste"
+          output:
+            contains:
+              - "Global environment variables created successfully"
+
+  - name: "invalid ZONE"
+    vars:
+      ENVIRONMENT_CODE: teste
+      ZONE: zona-02
+      ACTION: teste
+    asserts:
+      - name: check global.env variables
+        expect:
+          job: create_global_env
+          stepStatus: success
+          artifact:
+            file: "global.env"
+            contains:
+              - "ACTION=teste"
+              - "ZONE=zona-01"   # <- propositalmente errado
+              - "ENVIRONMENT_CODE=teste"
+          output:
+            contains:
+              - "Global environment variables created successfully"
+
+reports:
+  - type: console

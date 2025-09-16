@@ -1,0 +1,17 @@
+create_global_env:
+  stage: init
+  script:
+    - echo "ACTION=$ACTION" > global.env
+    - echo "ENVIRONMENT_CODE=$ENVIRONMENT_CODE" >> global.env
+    - echo "ZONE=$ZONE" >> global.env
+    - echo "creating environment ENVIRONMENT_CODE=$ENVIRONMENT_CODE"
+    - echo "creating environment_name ENVIRONMENT=$ENVIRONMENT"
+    - echo "SOFTWARE_PIPELINES_REF=$SOFTWARE_PIPELINES_REF"
+    - |
+      echo "pipeline called from body:\n"
+    - echo "$ENVIRONMENT_PAYLOAD"
+    - echo "Global environment variables created successfully"
+  artifacts:
+    expire_in: 1 day
+    reports:
+      dotenv: global.env
