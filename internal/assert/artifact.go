@@ -33,8 +33,6 @@ func AssertArtifact(a models.Assert, res Result) Result {
 	} else {
 		content := string(data)
 		for _, expected := range a.Expect.Artifact.Contains {
-			fmt.Println("expected:", expected)
-			fmt.Println("content:", content)
 			if strings.Contains(content, expected) {
 				res.Assertions = append(res.Assertions, AssertionResult{
 					Name:    a.Name,
@@ -44,6 +42,17 @@ func AssertArtifact(a models.Assert, res Result) Result {
 				res.Passed = false
 				res.Assertions = append(res.Assertions, NewAssetError(a.Name, fmt.Sprintf("(not contain %q)", expected)))
 
+			}
+		}
+		for _, expected := range a.Expect.Artifact.NoContains {
+			if !strings.Contains(content, expected) {
+				res.Assertions = append(res.Assertions, AssertionResult{
+					Name:    a.Name,
+					Passed:  true,
+					Message: fmt.Sprintf("✅ assert passed: %s (not contain: %s)", a.Name, expected)})
+			} else {
+				res.Passed = false
+				res.Assertions = append(res.Assertions, NewAssetError(a.Name, fmt.Sprintf("(contain %q)", expected)))
 			}
 		}
 	}
