@@ -21,10 +21,10 @@ type RunCfg struct {
 }
 
 type Artifact struct {
-	File       string   `yaml:"file"`
-	Type       string   `yaml:"type"`
-	Contains   []string `yaml:"contains"`
-	NoContains []string `yaml:"no_contains"`
+	File        string   `yaml:"file"`
+	Type        string   `yaml:"type"`
+	Contains    []string `yaml:"contains"`
+	NotContains []string `yaml:"notContains"`
 }
 
 type Output struct {

@@ -44,7 +44,7 @@ func AssertArtifact(a models.Assert, res Result) Result {
 
 			}
 		}
-		for _, expected := range a.Expect.Artifact.NoContains {
+		for _, expected := range a.Expect.Artifact.NotContains {
 			if !strings.Contains(content, expected) {
 				res.Assertions = append(res.Assertions, AssertionResult{
 					Name:    a.Name,

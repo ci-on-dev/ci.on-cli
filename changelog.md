@@ -5,7 +5,7 @@ All changes of this project must be added in this file.
 The format for based in [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and the project is follow the versioning according to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.2] - 17/09/2025
+## [0.2.3] - 17/09/2025
 
 ### Added
 
