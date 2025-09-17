@@ -22,6 +22,7 @@ type RunCfg struct {
 
 type Artifact struct {
 	File     string   `yaml:"file"`
+	Type     string   `yaml:"type"`
 	Contains []string `yaml:"contains"`
 }
 

@@ -11,13 +11,19 @@ import (
 
 func AssertArtifact(a models.Assert, res Result) Result {
 
+	var artifactFolder string
+	switch a.Expect.Artifact.Type {
+	case "dotenv":
+		artifactFolder = filepath.Join(".gitlab-ci-reports", "dotenv", a.Expect.Artifact.File)
+	default:
+		artifactFolder = a.Expect.Artifact.File
+	}
+
 	artifactPath := filepath.Join(
 		".gitlab-ci-local",
 		"artifacts",
 		a.Expect.Job,
-		".gitlab-ci-reports",
-		"dotenv",
-		a.Expect.Artifact.File,
+		artifactFolder,
 	)
 
 	data, err := os.ReadFile(artifactPath)
